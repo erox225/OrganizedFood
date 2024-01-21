@@ -1,0 +1,22 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+ http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+    <persistence-unit name="Organizedfood">
+        <class>back.soa.organizedFood.entity.Storage</class>
+        <class>back.soa.organizedFood.entity.ProductStatus</class>
+        <class>back.soa.organizedFood.entity.HomeEntity</class>
+        <class>back.soa.organizedFood.entity.Product</class>
+        <class>back.soa.organizedFood.entity.Recipe</class>
+        <class>back.soa.organizedFood.entity.User</class>
+        <properties>
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
+            <property name="javax.persistence.jdbc.user" value="root" />
+            <property name="javax.persistence.jdbc.password" value="root" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.3:3306/organizedfood?serverTimezone=UTC" />
+        </properties>
+    </persistence-unit>
+</persistence>

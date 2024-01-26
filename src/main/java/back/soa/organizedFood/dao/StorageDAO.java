@@ -57,7 +57,8 @@ public class StorageDAO implements DAO {
         }
     }
 
-    public List<Storage> getAllInfoByUser(String idUser) {
+    @Override
+    public List<Storage> getAllInfoByUser(long idUser) {
         System.out.println("getAllInfoByUser en StorageDAO with idUser = "+idUser);
 
         List<Storage> todasLasStorageEntities = new ArrayList<>();
@@ -68,7 +69,7 @@ public class StorageDAO implements DAO {
                                 "JOIN d.home h " +
                                 "JOIN h.users u " +
                                 "WHERE u.id = :idUser", Storage.class)
-                .setParameter("idUser", Long.parseLong(idUser))
+                .setParameter("idUser", idUser)
                 .getResultList();
         return result;
     }

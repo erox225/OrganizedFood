@@ -1,16 +1,16 @@
 package back.soa.organizedFood.dto.services;
 
-import back.soa.organizedFood.validations.ValidationResult;
+import back.soa.organizedFood.validations.ValidationResultEnum;
 
-public class UpdateServiceDTOResponse<T> extends AbstractServiceResponse {
+public class UpdateServiceResponse<T> extends AbstractServiceResponse {
     private boolean isUpdated;
 
-    public UpdateServiceDTOResponse(T payload) {
+    public UpdateServiceResponse(T payload) {
         super(payload);
         this.isUpdated = true;
     }
 
-    protected UpdateServiceDTOResponse(ValidationResult validationResult){
+    protected UpdateServiceResponse(ValidationResultEnum validationResult){
         super(validationResult);
         this.isUpdated = false;
     }

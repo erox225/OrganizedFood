@@ -1,7 +1,9 @@
 package back.soa.organizedFood.service;
 
-import back.soa.organizedFood.dto.dashboard.GetAllInfoDespensaResponseDTO;
+import back.soa.organizedFood.dao.HomeDAO;
+import back.soa.organizedFood.dto.services.*;
 import back.soa.organizedFood.entity.*;
+import back.soa.organizedFood.validations.ValidationResultEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,83 +15,121 @@ public class HogarService {
     @Autowired
     private DespensaService despensaService;
 
-    public List<Home> getAllHomesInfoByUser(String idUser) {
-        GetAllInfoDespensaResponseDTO getAllInfoDespensaResponseDTO = new GetAllInfoDespensaResponseDTO();
-        getAllInfoDespensaResponseDTO.setResult("ok");
-        getAllInfoDespensaResponseDTO.setDescription("successful");
+    @Autowired
+    private HomeDAO homeDAO;
 
-        List<Home> homeEntityList = new ArrayList<>();
 
+
+    public DeleteServiceResponse delete(String id) {
+        Boolean exist = this.findById(id).isPresent();
+        if (exist){
+            this.homeDAO.delete(id);
+            return new DeleteServiceResponse(null,ValidationResultEnum.VALID_RESULT);
+        }
+        return new DeleteServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
+    }
+
+    public FindAllServiceResponse<Home> findAllByUserId(Long userId){
+        List<Home> result = this.homeDAO.getAllByUserId(userId);
+        if(result.isEmpty()){
+            return new FindAllServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
+        }
+        return new FindAllServiceResponse(result);
+    }
+
+    public FindOneServiceResponse<Home> findById(String id){
+        Optional<Home> result = this.homeDAO.get(Long.parseLong(id));
+        if(result.isEmpty()){
+            return new FindOneServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
+        }
+        return new FindOneServiceResponse(result);
+    }
+
+    public UpdateServiceResponse update(Home home) {
+        return new UpdateServiceResponse<>(this.homeDAO.update(home));
+    }
+
+    public CreateServiceResponse<Home> add(Home home) {
+        System.out.println("add en HomeDAO");
+        return new CreateServiceResponse<>(ValidationResultEnum.VALID_RESULT.getValidationResult(),true);
+    }
+
+
+    public FindAllServiceResponse<Home> getAllByUserId(String idUser) {
         try {
-            List<Storage> getAllDashboardInfoByHogarResponse = despensaService.getAllInfoByUser(idUser);
-
-            // Agrupar las recetas y productos por hogar
-            Map<Long, Home> hogaresMap = new HashMap<>();
-            for (Storage storage : getAllDashboardInfoByHogarResponse) {
-                Long hogarId = storage.getHome().getId();
-
-                //Creamos el hogar
-                Home homeEntity = hogaresMap.getOrDefault(hogarId, new Home());
-                homeEntity.setId(hogarId);
-                homeEntity.setNombre(storage.getHome().getNombre());
-
-                // Verificar si la receta ya existe en la lista de recetas del hogar
-                Optional<Recipe> existingReceta = homeEntity.getRecipes().stream()
-                        .filter(r -> r.getId().equals(String.valueOf(storage.getRecipe().getId())))
-                        .findFirst();
-
-                if (existingReceta.isPresent()) {
-
-                    Product product = storage.getProduct();
-
-                    // La receta ya existe, agregar el producto
-                    Recipe receta = existingReceta.get();
-
-                    // Crear una nueva lista modificable para los productos
-                    List<Product> nuevosProductos = new ArrayList<>(receta.getProducts());
-
-                    // Agregar el nuevo producto a la lista
-                    nuevosProductos.add(product);
-
-                    // Actualizar la lista de productos en la receta existente
-                    receta.setProducts(nuevosProductos);
-
-                }else{
-                    //Tenemos que crear la receta en el Hogar y le agregamos el producto que necesita
-
-                    //Obtenemos el Estado del producto
-                    ProductStatus productStatus = storage.getProductStatus();
-
-                    //Obtenemos el Producto
-                    Product product = storage.getProduct();
-                    product.setEstadoProducto(productStatus.getNombre());
-
-                    //Creamos la lista de productos
-                    List<Product> productsEntityList = Arrays.asList(product);
-
-                    //Obtenemos la receta
-                    Recipe recipe = storage.getRecipe();
-
-                    //Seteamos la lista en la receta
-                    recipe.setProducts(productsEntityList);
-
-                    //Agregamos la receta al Hogar
-                    homeEntity.getRecipes().add(recipe);
-                }
-
-                hogaresMap.put(hogarId, homeEntity);
+            FindAllServiceResponse<Storage> getAllDashboardInfoByHogarResponse = despensaService.getAllInfoByUser(Long.parseLong(idUser));
+            if(getAllDashboardInfoByHogarResponse.getPayload().isEmpty()){
+                return new FindAllServiceResponse<>(ValidationResultEnum.VALID_RESULT);
             }
 
-            //Agregamos un Hogar a la lista
-            homeEntityList.addAll(hogaresMap.values());
+            // Agrupar las recetas y productos por hogar
+            Map<Long, Home> homesMap = new HashMap<>();
+            for (Storage storage : getAllDashboardInfoByHogarResponse.getPayload()) {
+                //Obtenemos el hogar
+                Home home = homesMap.getOrDefault(storage.getHome().getId(), new Home());
+                home.setId(storage.getHome().getId());
+                home.setNombre(storage.getHome().getNombre());
+
+                Optional<Recipe> existingRecipe = this.checkExistingReceta(home,storage.getRecipe().getId());
+                if (existingRecipe.isPresent()) {
+                    this.insertProductInRecipe(existingRecipe.get(),storage.getProduct());
+                }else{
+                    home.getRecipes().add(this.createRecipeInHome(storage));
+                }
+                homesMap.put(storage.getHome().getId(), home);
+            }
+            return new FindAllServiceResponse<>(new ArrayList<>(homesMap.values()));
+
         } catch (Exception e) {
-            // Manejar la excepción general
-            //logger.error("Error en getAllInfoDespensa: " + e.getMessage());
-            e.printStackTrace();
-            getAllInfoDespensaResponseDTO.setResult("error");
-            getAllInfoDespensaResponseDTO.setDescription("Ha ocurrido un error en el servicio.");
+            return new FindAllServiceResponse<>(ValidationResultEnum.VALID_RESULT);
         }
-        return homeEntityList;
+
     }
+
+
+
+
+
+
+
+
+
+
+
+    //Functions:
+
+    // Verificar si la receta ya existe en la lista de recetas del hogar
+    public Optional<Recipe> checkExistingReceta(Home homeEntity, Long idRecipe){
+         return  homeEntity.getRecipes().stream()
+                .filter(r -> r.getId().equals(idRecipe))
+                .findFirst();
+    }
+    // Agregar producto a receta
+    public void insertProductInRecipe(Recipe recipe, Product product){
+        // Crear una nueva lista modificable para los productos
+        List<Product> nuevosProductos = new ArrayList<>(recipe.getProducts());
+        // Agregar el nuevo producto a la lista
+        nuevosProductos.add(product);
+        // Actualizar la lista de productos en la receta existente
+        recipe.setProducts(nuevosProductos);
+    }
+
+    // Crear receta
+    public Recipe createRecipeInHome(Storage storage){
+        //Obtenemos el Estado del producto
+        ProductStatus productStatus = storage.getProductStatus();
+        //Obtenemos el Producto
+        Product product = storage.getProduct();
+        product.setEstadoProducto(productStatus.getNombre());
+        //Creamos la lista de productos
+        List<Product> productsEntityList = Arrays.asList(product);
+        //Obtenemos la receta
+        Recipe recipe = storage.getRecipe();
+        //Seteamos la lista en la receta
+        recipe.setProducts(productsEntityList);
+        //Agregamos la receta al Hogar
+        return recipe;
+    }
+
 
 }

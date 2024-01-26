@@ -25,6 +25,10 @@ public class HomeDAO implements DAO {
         return null;
     }
 
+    public List getAllByUserId(Long userId) {
+        return null;
+    }
+
     @Override
     public void save(Object o) {
 
@@ -38,6 +42,11 @@ public class HomeDAO implements DAO {
     @Override
     public void delete(Object o) {
 
+    }
+
+    @Override
+    public List getAllInfoByUser(long idUser) {
+        return null;
     }
 
     public List<Home> getHogaresByUser(Long idUser){

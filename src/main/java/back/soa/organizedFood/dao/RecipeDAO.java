@@ -45,4 +45,9 @@ public class RecipeDAO implements DAO {
     public void delete(Object o) {
 
     }
+
+    @Override
+    public List getAllInfoByUser(long idUser) {
+        return null;
+    }
 }

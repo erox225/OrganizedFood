@@ -1,19 +1,19 @@
 package back.soa.organizedFood.dto.services;
 
-import back.soa.organizedFood.validations.ValidationResult;
+import back.soa.organizedFood.validations.ValidationResultEnum;
 
-public class CreateServiceDTOResponse<T> extends AbstractServiceResponse{
+public class CreateServiceResponse<T> extends AbstractServiceResponse{
 
     private boolean isCreated;
 
-    public CreateServiceDTOResponse(T payload) {
+    public CreateServiceResponse(T payload) {
         super(payload);
         this.isCreated = true;
     }
 
-    protected CreateServiceDTOResponse(ValidationResult validationResult){
+    public CreateServiceResponse(ValidationResultEnum validationResult,boolean isCreated){
         super(validationResult);
-        this.isCreated = false;
+        this.isCreated = isCreated;
     }
 
     @Override

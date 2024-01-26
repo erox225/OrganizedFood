@@ -1,5 +1,7 @@
 package back.soa.organizedFood.dao;
 
+import back.soa.organizedFood.entity.Storage;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +16,6 @@ public interface DAO<T> {
     void update(T t, String[] params);
 
     void delete(T t);
+
+    List<T> getAllInfoByUser(long idUser);
 }

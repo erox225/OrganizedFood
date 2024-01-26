@@ -1,27 +1,31 @@
 package back.soa.organizedFood.dto.services;
 
-import back.soa.organizedFood.validations.ValidationResult;
 import back.soa.organizedFood.validations.ValidationResultEnum;
 
 public abstract class AbstractServiceResponse {
 
     protected Object payload;
-    protected ValidationResult validationResult;
+    protected ValidationResultEnum validationResultEnum;
 
     protected AbstractServiceResponse(Object payload){
         this.payload = payload;
-        this.validationResult = ValidationResultEnum.VALID_RESULT.getValidationResult();
+        this.validationResultEnum = ValidationResultEnum.VALID_RESULT.getValidationResult();
     }
 
-    protected AbstractServiceResponse(ValidationResult validationResult){
-        this.validationResult = validationResult;
+    protected AbstractServiceResponse(ValidationResultEnum validationResultenum){
+        this.validationResultEnum = validationResultenum;
+    }
+
+    protected AbstractServiceResponse(Object payload,ValidationResultEnum validationResultenum){
+        this.payload = payload;
+        this.validationResultEnum = validationResultenum;
     }
 
     public Object getPayload() {
         return payload;
     }
 
-    public ValidationResult getValidationResult() {
-        return validationResult;
+    public ValidationResultEnum getValidationResult() {
+        return validationResultEnum;
     }
 }

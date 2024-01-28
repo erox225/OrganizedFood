@@ -30,11 +30,11 @@ public class HogarService {
     }
 
     public FindAllServiceResponse<Home> findAllByUserId(Long userId){
-        List<Home> result = this.homeDAO.getAllByUserId(userId);
+        Optional<List> result = this.homeDAO.getAllInfoByUser(userId);
         if(result.isEmpty()){
             return new FindAllServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
         }
-        return new FindAllServiceResponse(result);
+        return new FindAllServiceResponse(result.get());
     }
 
     public FindOneServiceResponse<Home> findById(String id){
@@ -46,7 +46,13 @@ public class HogarService {
     }
 
     public UpdateServiceResponse update(Home home) {
-        return new UpdateServiceResponse<>(this.homeDAO.update(home));
+        Boolean exist = this.findById(String.valueOf(home.getId())).isPresent();
+        if (exist){
+            this.homeDAO.update(home);
+            return new UpdateServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult(),true);
+        }
+        return new UpdateServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult(),false);
+
     }
 
     public CreateServiceResponse<Home> add(Home home) {

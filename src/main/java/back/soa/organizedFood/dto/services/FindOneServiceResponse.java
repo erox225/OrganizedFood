@@ -15,6 +15,7 @@ public class FindOneServiceResponse<T> extends AbstractServiceResponse {
 
     public FindOneServiceResponse(ValidationResultEnum validationResultEnum) {
         super(validationResultEnum);
+        this.isPresent = false;
     }
 
     @Override

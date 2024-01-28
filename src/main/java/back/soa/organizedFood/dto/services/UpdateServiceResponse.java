@@ -5,14 +5,9 @@ import back.soa.organizedFood.validations.ValidationResultEnum;
 public class UpdateServiceResponse<T> extends AbstractServiceResponse {
     private boolean isUpdated;
 
-    public UpdateServiceResponse(T payload) {
-        super(payload);
-        this.isUpdated = true;
-    }
-
-    protected UpdateServiceResponse(ValidationResultEnum validationResult){
+    public UpdateServiceResponse(ValidationResultEnum validationResult, boolean isUpdated){
         super(validationResult);
-        this.isUpdated = false;
+        this.isUpdated = isUpdated;
     }
 
     public boolean isUpdated() {

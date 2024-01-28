@@ -9,13 +9,13 @@ public interface DAO<T> {
 
     Optional<T> get(long id);
 
-    List<T> getAll();
+    Optional<List<T>> getAll();
 
     void save(T t);
 
-    void update(T t, String[] params);
+    void update(T t);
 
     void delete(T t);
 
-    List<T> getAllInfoByUser(long idUser);
+    Optional<List<T>> getAllInfoByUser(long idUser);
 }

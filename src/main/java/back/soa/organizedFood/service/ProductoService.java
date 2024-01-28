@@ -26,11 +26,11 @@ public class ProductoService {
     }
 
     public FindAllServiceResponse<Product> findAllByUserId(Long userId){
-        List<Product> result = this.productDAO.getAllInfoByUser(userId);
+        Optional<List<Product>> result = this.productDAO.getAllInfoByUser(userId);
         if(result.isEmpty()){
             return new FindAllServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
         }
-        return new FindAllServiceResponse(result);
+        return new FindAllServiceResponse(result.get());
     }
 
     public FindOneServiceResponse<Product> findById(String id){
@@ -42,7 +42,12 @@ public class ProductoService {
     }
 
     public UpdateServiceResponse update(Product product) {
-        return new UpdateServiceResponse<>(this.productDAO.update(product));
+        Boolean exist = this.findById(String.valueOf(product.getId())).isPresent();
+        if (exist){
+            this.productDAO.update(product);
+            return new UpdateServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult(),true);
+        }
+        return new UpdateServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult(),false);
     }
 
     public CreateServiceResponse<Product> add(Product product) {

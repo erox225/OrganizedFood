@@ -1,6 +1,8 @@
 package back.soa.organizedFood.dao;
 
+import back.soa.organizedFood.entity.Product;
 import back.soa.organizedFood.entity.Storage;
+import back.soa.organizedFood.entity.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +28,9 @@ public class StorageDAO implements DAO {
     }
 
     @Override
-    public List<Storage> getAll() {
-        List<Storage> todasLasStorageEntities = new ArrayList<>();
-        todasLasStorageEntities = entityManager.createQuery("FROM storage", Storage.class).getResultList();
-        return todasLasStorageEntities;
+    public Optional<List<Storage>> getAll() {
+        List<Storage> todasLasStorageEntities = entityManager.createQuery("FROM storage", Storage.class).getResultList();
+        return Optional.ofNullable(todasLasStorageEntities);
     }
 
     @Override
@@ -43,8 +44,13 @@ public class StorageDAO implements DAO {
     }
 
     @Override
-    public void update(Object o, String[] params) {
-
+    public void update(Object o) {
+        if (o instanceof Storage) {
+            Storage storage = (Storage) o;
+            entityManager.merge(storage);
+        } else {
+            throw new IllegalArgumentException("El objeto no es de tipo Despensa");
+        }
     }
 
     @Override
@@ -58,11 +64,8 @@ public class StorageDAO implements DAO {
     }
 
     @Override
-    public List<Storage> getAllInfoByUser(long idUser) {
+    public Optional<List<Storage>> getAllInfoByUser(long idUser) {
         System.out.println("getAllInfoByUser en StorageDAO with idUser = "+idUser);
-
-        List<Storage> todasLasStorageEntities = new ArrayList<>();
-        todasLasStorageEntities = entityManager.createQuery("FROM Storage", Storage.class).getResultList();
 
         List<Storage> result = entityManager.createQuery(
                         "SELECT d FROM Storage d " +
@@ -71,6 +74,7 @@ public class StorageDAO implements DAO {
                                 "WHERE u.id = :idUser", Storage.class)
                 .setParameter("idUser", idUser)
                 .getResultList();
-        return result;
+
+        return Optional.ofNullable(result);
     }
 }

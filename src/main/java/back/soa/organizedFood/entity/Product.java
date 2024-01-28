@@ -22,19 +22,16 @@ public class Product {
     @Column(name = "fecha_creacion")
     private Date fechaCreacion;
 
-    private String estadoProducto;
-
     //Relaciones propietarias
 
     //Relaciones Inversas
     @ManyToMany(mappedBy = "products")
     private List<Recipe> recipes = new ArrayList<>();
 
-    public Product(long id, String nombre, Date fechaCreacion, String estadoProducto) {
+    public Product(long id, String nombre, Date fechaCreacion) {
         this.id = id;
         this.nombre = nombre;
         this.fechaCreacion = fechaCreacion;
-        this.estadoProducto = estadoProducto;
     }
 
 /*
@@ -69,14 +66,6 @@ public class Product {
 
     public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
-    }
-
-    public String getEstadoProducto() {
-        return estadoProducto;
-    }
-
-    public void setEstadoProducto(String estadoProducto) {
-        this.estadoProducto = estadoProducto;
     }
 
     public List<Recipe> getRecipes() {

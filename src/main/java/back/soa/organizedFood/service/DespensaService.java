@@ -21,14 +21,15 @@ public class DespensaService {
 
     public FindAllServiceResponse<Storage> getAllInfoByUser(long idUser) {
         System.out.println("getAllInfoByUser en StorageService with idUser = "+idUser);
-        List<Storage> result = this.storageDAO.getAllInfoByUser(idUser);
+        Optional<List<Storage>> result = this.storageDAO.getAllInfoByUser(idUser);
         if(result.isEmpty()){
             return new FindAllServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
         }
-        return new FindAllServiceResponse(result);
+        return new FindAllServiceResponse(result.get());
     }
 
     public DeleteServiceResponse delete(String id) {
+        System.out.println("delete en StorageService");
         Boolean exist = this.findById(id).isPresent();
         if (exist){
             this.storageDAO.delete(id);
@@ -38,14 +39,16 @@ public class DespensaService {
     }
 
     public FindAllServiceResponse<Storage> findAllByUserId(Long userId){
-        List<Storage> result = this.storageDAO.getAllInfoByUser(userId);
+        System.out.println("findAllByUserId en StorageService");
+        Optional<List<Storage>> result = this.storageDAO.getAllInfoByUser(userId);
         if(result.isEmpty()){
             return new FindAllServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
         }
-        return new FindAllServiceResponse(result);
+        return new FindAllServiceResponse(result.get());
     }
 
     public FindOneServiceResponse<Storage> findById(String id){
+        System.out.println("findById en StorageService");
         Optional<Storage> result = this.storageDAO.get(Long.parseLong(id));
         if(result.isEmpty()){
             return new FindOneServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
@@ -54,7 +57,15 @@ public class DespensaService {
     }
 
     public UpdateServiceResponse update(Storage storage) {
-        return new UpdateServiceResponse<>(this.storageDAO.update(storage));
+        System.out.println("Update en StorageService");
+        //Comprobar que existe el objeto:
+        boolean result = this.findById(String.valueOf(storage.getId())).isPresent();
+        if(result){
+            //Actualizar el objeto
+            this.storageDAO.update(storage);
+            return new UpdateServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult(),true);
+        }
+        return new UpdateServiceResponse<>(ValidationResultEnum.VALID_RESULT.getValidationResult(),false);
     }
 
     public CreateServiceResponse<Storage> add(Home home) {

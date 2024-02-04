@@ -15,18 +15,8 @@ public class HomeController {
     @GetMapping("/user/{idUser}/homes/recipes/products")
     @ResponseBody
     public ResponseEntity<?> getAllInfoHomeByUser(@PathVariable(name = "idUser", required = true) String idUser) {
-        return new ResponseEntity<>(this.hogarService.getAllHomesInfoByUser(idUser), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/homes/{id}")
-    public ResponseEntity<?> deleteHome(@PathVariable String id){
-        this.hogarService.
-        DeleteServiceResponse response = this.pacomonService.delete(id);
-        if (!response.isDeleted()){
-            return new ResponseEntity<>(response.getValidationResult().createMsg(), HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<PacomonResponseDTO>(HttpStatus.OK);
+       String hola;
+        return new ResponseEntity<>(this.hogarService.getAllByUserId(idUser), HttpStatus.OK);
     }
 
 }

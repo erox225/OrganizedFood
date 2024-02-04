@@ -126,7 +126,7 @@ public class HogarService {
         ProductStatus productStatus = storage.getProductStatus();
         //Obtenemos el Producto
         Product product = storage.getProduct();
-        product.setEstadoProducto(productStatus.getNombre());
+        //product.setEstadoProducto(productStatus.getNombre());
         //Creamos la lista de productos
         List<Product> productsEntityList = Arrays.asList(product);
         //Obtenemos la receta

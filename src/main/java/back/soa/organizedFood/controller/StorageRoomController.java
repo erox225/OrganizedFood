@@ -1,7 +1,5 @@
 package back.soa.organizedFood.controller;
 
-import back.soa.organizedFood.dto.dashboard.GetAllInfoDespensaRequestDTO;
-import back.soa.organizedFood.dto.dashboard.GetAllInfoDespensaResponseDTO;
 import back.soa.organizedFood.service.DespensaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

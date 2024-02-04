@@ -30,11 +30,11 @@ public class RecetaService {
     }
 
     public FindAllServiceResponse<Recipe> findAllByUserId(Long userId){
-        List<Recipe> result = this.recipeDAO.getAllInfoByUser(userId);
+        Optional<List<Recipe>> result = this.recipeDAO.getAllInfoByUser(userId);
         if(result.isEmpty()){
             return new FindAllServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
         }
-        return new FindAllServiceResponse(result);
+        return new FindAllServiceResponse(result.get());
     }
 
     public FindOneServiceResponse<Recipe> findById(String id){
@@ -45,9 +45,9 @@ public class RecetaService {
         return new FindOneServiceResponse(result);
     }
 
-    public UpdateServiceResponse update(Recipe recipe) {
+   /* public UpdateServiceResponse update(Recipe recipe) {
         return new UpdateServiceResponse<>(this.recipeDAO.update(recipe));
-    }
+    }*/
 
     public CreateServiceResponse<Recipe> add(Recipe recipe) {
         System.out.println("add en HomeDAO");

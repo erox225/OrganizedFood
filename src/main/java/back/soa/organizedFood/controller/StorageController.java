@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/despensa")
-public class StorageRoomController {
+public class StorageController {
 
     @Autowired
     private DespensaService despensaService;

@@ -17,6 +17,7 @@ public class ProductoService {
     private ProductDAO productDAO;
 
     public DeleteServiceResponse delete(String id) {
+        System.out.println("delete in ProductoService");
         Boolean exist = this.findById(id).isPresent();
         if (exist){
             this.productDAO.delete(id);
@@ -26,6 +27,7 @@ public class ProductoService {
     }
 
     public FindAllServiceResponse<Product> findAllByUserId(Long userId){
+        System.out.println("findAllByUserId in ProductoService");
         Optional<List<Product>> result = this.productDAO.getAllInfoByUser(userId);
         if(result.isEmpty()){
             return new FindAllServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
@@ -34,6 +36,7 @@ public class ProductoService {
     }
 
     public FindOneServiceResponse<Product> findById(String id){
+        System.out.println("findById in ProductoService");
         Optional<Product> result = this.productDAO.get(Long.parseLong(id));
         if(result.isEmpty()){
             return new FindOneServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
@@ -42,6 +45,7 @@ public class ProductoService {
     }
 
     public UpdateServiceResponse update(Product product) {
+        System.out.println("update in ProductoService");
         Boolean exist = this.findById(String.valueOf(product.getId())).isPresent();
         if (exist){
             this.productDAO.update(product);
@@ -51,7 +55,19 @@ public class ProductoService {
     }
 
     public CreateServiceResponse<Product> add(Product product) {
-        System.out.println("add en HomeDAO");
+        System.out.println("add in ProductoService");
         return new CreateServiceResponse<>(ValidationResultEnum.VALID_RESULT.getValidationResult(),true);
+    }
+
+    public Object getProductsByIdHome(Long idHome) {
+        System.out.println("getProductsByIdHome in ProductoService");
+    }
+
+    public Object getProductsByRecipeId(Long idRecipe) {
+        System.out.println("getProductsByRecipeId in ProductoService");
+    }
+
+    public Object getProducts(Long idProduct) {
+        System.out.println("getProducts in ProductoService");
     }
 }

@@ -1,9 +1,9 @@
-package back.soa.organizedFood.dto.controller.Home;
+package back.soa.organizedFood.dto.controller.User;
 
+import back.soa.organizedFood.dto.controller.Home.HomeResponseDTO;
 import back.soa.organizedFood.dto.controller.Recipe.RecipeResponseDTO;
-import back.soa.organizedFood.dto.controller.User.UserResponseDTO;
+import back.soa.organizedFood.entity.Home;
 import back.soa.organizedFood.entity.Recipe;
-import back.soa.organizedFood.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,10 +16,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class HomeResponseDTO {
-    private Long id;
-    private String nombre;
-    private Date fechaCreacion;
+public class UserResponseDTO {
+    private String username;
+    private List<HomeResponseDTO> homes = new ArrayList<>();
     private List<RecipeResponseDTO> recipes = new ArrayList<>();
-    private List<UserResponseDTO> users = new ArrayList<>();
 }

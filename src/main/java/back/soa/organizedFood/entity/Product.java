@@ -1,5 +1,8 @@
 package back.soa.organizedFood.entity;
 
+import back.soa.organizedFood.dto.controller.Home.HomeResponseDTO;
+import back.soa.organizedFood.dto.controller.Product.ProductResponseDTO;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -7,9 +10,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
+@Getter @Setter @NoArgsConstructor @Entity @AllArgsConstructor
 @Table(name = "product")
 public class Product {
     @Id
@@ -25,7 +26,8 @@ public class Product {
     //Relaciones propietarias
 
     //Relaciones Inversas
-    @ManyToMany(mappedBy = "products")
+    @ManyToMany(mappedBy = "products",fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Recipe> recipes = new ArrayList<>();
 
     public Product(long id, String nombre, Date fechaCreacion) {
@@ -34,45 +36,22 @@ public class Product {
         this.fechaCreacion = fechaCreacion;
     }
 
-/*
-    public ProductRequestDTO toDTO(String estado) {
-        ProductRequestDTO productRequestDTO = new ProductRequestDTO();
-        productRequestDTO.setId(String.valueOf(this.id));
-        productRequestDTO.setNombre(this.nombre);
-        productRequestDTO.setEstado(estado);
-        return productRequestDTO;
-    }
-    */
-
-    public Long getId() {
-        return id;
+    public ProductResponseDTO toDTO(String estado,boolean getRecipesDT0) {
+        ProductResponseDTO productResponseDTO = new ProductResponseDTO();
+        productResponseDTO.setId(this.id);
+        productResponseDTO.setNombre(this.nombre);
+        productResponseDTO.setProductStatus(estado);
+        if(getRecipesDT0){
+            this.getRecipesDT0(productResponseDTO);
+        }
+        return productResponseDTO;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Date getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(Date fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
-    public List<Recipe> getRecipes() {
-        return recipes;
-    }
-
-    public void setRecipes(List<Recipe> recipes) {
-        this.recipes = recipes;
+    private void getRecipesDT0(ProductResponseDTO productResponseDTO){
+        if(!this.getRecipes().isEmpty()){
+            for (Recipe recipe: this.getRecipes()) {
+                productResponseDTO.getRecipes().add(recipe.toDTO(false,false,false));
+            }
+        }
     }
 }

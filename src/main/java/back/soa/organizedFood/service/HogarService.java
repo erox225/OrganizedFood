@@ -1,16 +1,21 @@
 package back.soa.organizedFood.service;
 
 import back.soa.organizedFood.dao.HomeDAO;
+import back.soa.organizedFood.dto.controller.Home.HomeResponseDTO;
 import back.soa.organizedFood.dto.services.*;
 import back.soa.organizedFood.entity.*;
 import back.soa.organizedFood.validations.ValidationResultEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 @Service
 public class HogarService {
+
+    private static final Logger logger = LoggerFactory.getLogger(HogarService.class);
 
     @Autowired
     private DespensaService despensaService;
@@ -18,9 +23,9 @@ public class HogarService {
     @Autowired
     private HomeDAO homeDAO;
 
-
-
+    ////////////////////////////////Public Functions:
     public DeleteServiceResponse delete(String id) {
+        System.out.println("delete in HogarService");
         Boolean exist = this.findById(id).isPresent();
         if (exist){
             this.homeDAO.delete(id);
@@ -30,6 +35,7 @@ public class HogarService {
     }
 
     public FindAllServiceResponse<Home> findAllByUserId(Long userId){
+        System.out.println("findAllByUserId in HogarService");
         Optional<List> result = this.homeDAO.getAllInfoByUser(userId);
         if(result.isEmpty()){
             return new FindAllServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
@@ -37,7 +43,17 @@ public class HogarService {
         return new FindAllServiceResponse(result.get());
     }
 
+    public FindAllServiceResponse<Home> findAll(Long userId){
+        System.out.println("findAll in HogarService");
+        Optional<List> result = this.homeDAO.getAllInfo(userId);
+        if(result.isEmpty()){
+            return new FindAllServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
+        }
+        return new FindAllServiceResponse(result.get());
+    }
+
     public FindOneServiceResponse<Home> findById(String id){
+        System.out.println("findById in HogarService");
         Optional<Home> result = this.homeDAO.get(Long.parseLong(id));
         if(result.isEmpty()){
             return new FindOneServiceResponse(ValidationResultEnum.VALID_RESULT.getValidationResult());
@@ -46,6 +62,7 @@ public class HogarService {
     }
 
     public UpdateServiceResponse update(Home home) {
+        System.out.println("update in HogarService");
         Boolean exist = this.findById(String.valueOf(home.getId())).isPresent();
         if (exist){
             this.homeDAO.update(home);
@@ -56,12 +73,13 @@ public class HogarService {
     }
 
     public CreateServiceResponse<Home> add(Home home) {
-        System.out.println("add en HomeDAO");
+        System.out.println("add in HogarService");
         return new CreateServiceResponse<>(ValidationResultEnum.VALID_RESULT.getValidationResult(),true);
     }
 
 
-    public FindAllServiceResponse<Home> getAllByUserId(String idUser) {
+    public FindAllServiceResponse<HomeResponseDTO> getAllByUserId(String idUser) {
+        System.out.println("getAllByUserId in HogarService");
         try {
             FindAllServiceResponse<Storage> getAllDashboardInfoByHogarResponse = despensaService.getAllInfoByUser(Long.parseLong(idUser));
             if(getAllDashboardInfoByHogarResponse.getPayload().isEmpty()){
@@ -84,7 +102,15 @@ public class HogarService {
                 }
                 homesMap.put(storage.getHome().getId(), home);
             }
-            return new FindAllServiceResponse<>(new ArrayList<>(homesMap.values()));
+
+            //logger.info("Estamos aqui {}", homesMap.values());
+            Map<Integer, HomeResponseDTO> homesMapDTO = new HashMap<>();
+            for(int i=1;i<=homesMap.size();i++){
+                HomeResponseDTO variables = homesMap.get(Long.parseLong(String.valueOf(i))).toDTO(true,false);
+                homesMapDTO.put(i,variables);
+            }
+
+            return new FindAllServiceResponse<>(new ArrayList<>(homesMapDTO.values()));
 
         } catch (Exception e) {
             return new FindAllServiceResponse<>(ValidationResultEnum.VALID_RESULT);
@@ -92,26 +118,25 @@ public class HogarService {
 
     }
 
+    public Object getRecipeById(String idRecipe) {
+        System.out.println("getRecipeById in HogarService");
+    }
 
+    public Object getHomesByUserId(String idUser) {
+        System.out.println("getHomesByUserId in HogarService");
+    }
 
-
-
-
-
-
-
-
-
-    //Functions:
-
+    ////////////////////////////////Private Functions:
     // Verificar si la receta ya existe en la lista de recetas del hogar
     public Optional<Recipe> checkExistingReceta(Home homeEntity, Long idRecipe){
+        System.out.println("checkExistingReceta in HogarService");
          return  homeEntity.getRecipes().stream()
                 .filter(r -> r.getId().equals(idRecipe))
                 .findFirst();
     }
     // Agregar producto a receta
-    public void insertProductInRecipe(Recipe recipe, Product product){
+    private void insertProductInRecipe(Recipe recipe, Product product){
+        System.out.println("insertProductInRecipe in HogarService");
         // Crear una nueva lista modificable para los productos
         List<Product> nuevosProductos = new ArrayList<>(recipe.getProducts());
         // Agregar el nuevo producto a la lista
@@ -121,7 +146,8 @@ public class HogarService {
     }
 
     // Crear receta
-    public Recipe createRecipeInHome(Storage storage){
+    private Recipe createRecipeInHome(Storage storage){
+        System.out.println("createRecipeInHome in HogarService");
         //Obtenemos el Estado del producto
         ProductStatus productStatus = storage.getProductStatus();
         //Obtenemos el Producto
@@ -136,6 +162,5 @@ public class HogarService {
         //Agregamos la receta al Hogar
         return recipe;
     }
-
 
 }

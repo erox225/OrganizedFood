@@ -70,4 +70,6 @@ public class HomeDAO implements DAO {
                 .getResultList());
     }
 
+    public Optional<List> getAllInfo(Long userId) {
+    }
 }

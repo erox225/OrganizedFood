@@ -6,9 +6,7 @@ import back.soa.organizedFood.entity.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,16 +63,19 @@ public class StorageDAO implements DAO {
 
     @Override
     public Optional<List<Storage>> getAllInfoByUser(long idUser) {
-        System.out.println("getAllInfoByUser en StorageDAO with idUser = "+idUser);
 
-        List<Storage> result = entityManager.createQuery(
+        TypedQuery<Storage> query = entityManager.createQuery(
                         "SELECT d FROM Storage d " +
                                 "JOIN d.home h " +
                                 "JOIN h.users u " +
                                 "WHERE u.id = :idUser", Storage.class)
-                .setParameter("idUser", idUser)
-                .getResultList();
+                .setParameter("idUser", idUser);
 
-        return Optional.ofNullable(result);
+        try {
+            List<Storage> result = query.getResultList();
+            return Optional.ofNullable(result);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }

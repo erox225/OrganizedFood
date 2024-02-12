@@ -5,8 +5,9 @@
              version="2.0">
     <persistence-unit name="Organizedfood">
         <class>back.soa.organizedFood.entity.Storage</class>
+        <class>back.soa.organizedFood.entity.Purchase</class>
         <class>back.soa.organizedFood.entity.ProductStatus</class>
-        <class>back.soa.organizedFood.entity.HomeEntity</class>
+        <class>back.soa.organizedFood.entity.Home</class>
         <class>back.soa.organizedFood.entity.Product</class>
         <class>back.soa.organizedFood.entity.Recipe</class>
         <class>back.soa.organizedFood.entity.User</class>

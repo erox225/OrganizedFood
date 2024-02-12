@@ -1,20 +1,15 @@
 package back.soa.organizedFood.entity;
 
+import back.soa.organizedFood.dto.controller.Product.ProductResponseDTO;
+import back.soa.organizedFood.dto.controller.User.UserResponseDTO;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.ManyToMany;
-import javax.persistence.JoinTable;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
+@Getter @Setter @NoArgsConstructor @Entity @AllArgsConstructor
 @Table(name = "user")
 public class User {
     @Id
@@ -34,76 +29,51 @@ public class User {
     private Date fechaModificacion;
 
     //Relaciones propietarias
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "home_user",
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_hogar"))
+    @JsonBackReference
     private List<Home> homes = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "recipe_user",
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_receta"))
+    @JsonBackReference
     private List<Recipe> recipes = new ArrayList<>();
 
     //Relaciones Inversas
 
+    public UserResponseDTO toDTO(boolean getHomesDto, boolean getRecipesDTO) {
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setUsername(this.username);
+        if(getHomesDto){
+            this.getHomesDTO(userResponseDTO);
+        }
 
-    public Long getId() {
-        return id;
+        if(getRecipesDTO){
+            this.getRecipesDTO(userResponseDTO);
+        }
+
+        return userResponseDTO;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    private void getHomesDTO(UserResponseDTO userResponseDTO){
+        if(!this.getHomes().isEmpty()){
+            for (Home home: this.getHomes()) {
+                userResponseDTO.getHomes().add(home.toDTO(false,false));
+            }
+        }
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Date getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(Date fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
-    public Date getFechaModificacion() {
-        return fechaModificacion;
-    }
-
-    public void setFechaModificacion(Date fechaModificacion) {
-        this.fechaModificacion = fechaModificacion;
-    }
-
-    public List<Home> getHomes() {
-        return homes;
-    }
-
-    public void setHomes(List<Home> homes) {
-        this.homes = homes;
-    }
-
-    public List<Recipe> getRecipes() {
-        return recipes;
-    }
-
-    public void setRecipes(List<Recipe> recipes) {
-        this.recipes = recipes;
+    private void getRecipesDTO(UserResponseDTO userResponseDTO){
+        if(!this.getRecipes().isEmpty()){
+            for (Recipe recipe: this.getRecipes()){
+                userResponseDTO.getRecipes().add(recipe.toDTO(false,false,false));
+            }
+        }
     }
 }

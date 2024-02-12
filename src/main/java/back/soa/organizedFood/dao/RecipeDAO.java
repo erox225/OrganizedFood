@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +18,14 @@ import java.util.Optional;
 
 
 @Repository
-@Transactional
 public class RecipeDAO implements DAO {
+    EntityManagerFactory enf = Persistence.createEntityManagerFactory("Organizedfood");
+    EntityManager entityManager;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    public RecipeDAO(){
+        this.entityManager = this.enf.createEntityManager();
+    }
+
     @Override
     public Optional<Recipe> get(long id) {
         System.out.println("get en RecipeDAO with id = "+id);
